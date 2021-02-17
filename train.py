@@ -68,45 +68,45 @@ last_test_r2=-1
 print('Training')
 iteration=0
 for epoch in range(50000):
-	for batch in data_loader:
-		iteration+=1
-		optimizer.zero_grad()
-		adjacency_matrix, node_features, y = batch
-		batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
-		y_pred=model(node_features,batch_mask,adjacency_matrix,None)
-		loss=criterion(y_pred,y)
-		losses.append(loss.item())
-		loss.backward()
-		torch.nn.utils.clip_grad_norm_(model.parameters(),2)
-		optimizer.step()
-	
-	#end of 1 epoch -- time to evaluate
-	model.eval()
-	gold=np.array([])
-	preds=np.array([])
+    for batch in data_loader:
+        iteration+=1
+        optimizer.zero_grad()
+        adjacency_matrix, node_features, y = batch
+        batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
+        y_pred=model(node_features,batch_mask,adjacency_matrix,None)
+        loss=criterion(y_pred,y)
+        losses.append(loss.item())
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(),2)
+        optimizer.step()
+    
+    #end of 1 epoch -- time to evaluate
+    model.eval()
+    gold=np.array([])
+    preds=np.array([])
 
-	for t_batch in data_loader:
-		t_adjacency_matrix, t_node_features, t_y = t_batch
-		gold=np.append(gold,t_y.tolist())
-		t_batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
-		t_y_pred=model(node_features,batch_mask,adjacency_matrix,None)
-		preds=np.append(preds,t_y_pred.tolist())
+    for t_batch in data_loader:
+        t_adjacency_matrix, t_node_features, t_y = t_batch
+        gold=np.append(gold,t_y.tolist())
+        t_batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
+        t_y_pred=model(node_features,batch_mask,adjacency_matrix,None)
+        preds=np.append(preds,t_y_pred.tolist())
 
-	test_rmse=np.sqrt(np.mean((preds-gold)**2))
-	test_r2=np.corrcoef(preds,gold)[0][1]**2
-	model.train()
+    test_rmse=np.sqrt(np.mean((preds-gold)**2))
+    test_r2=np.corrcoef(preds,gold)[0][1]**2
+    model.train()
 
-	if test_r2 > last_test_r2 or test_rmse < last_test_rmse:
-		last_test_rmse=test_rmse
-		last_test_r2=test_r2
-		num_epochs_since_improvement=0
-	else:
-		num_epochs_since_improvement+=1
+    if test_r2 > last_test_r2 or test_rmse < last_test_rmse:
+        last_test_rmse=test_rmse
+        last_test_r2=test_r2
+        num_epochs_since_improvement=0
+    else:
+        num_epochs_since_improvement+=1
 
-	#print the stats
-	print(f'-----------------------------------------')
-	print(f'Epoch: {epoch}/50000')
-	print(f'Training RMSE: {train_rmse}')
+    #print the stats
+    print(f'-----------------------------------------')
+    print(f'Epoch: {epoch}/50000')
+    print(f'Training RMSE: {train_rmse}')
     print(f'Training R2: {train_r2}')
     print(f'Test RMSE: {test_rmse}')
     print(f'Test R2: {test_r2}')
@@ -117,11 +117,11 @@ for epoch in range(50000):
 
     #now we check if dynamic stopping was signalled
     if num_epochs_since_improvement==4:
-    	print(f'Early termination signalled! Stopping training!\n{epoch}/50000 Completed.')
+        print(f'Early termination signalled! Stopping training!\n{epoch}/50000 Completed.')
 
 #Saving the resulting weights
 if not os.path.isdir(args.datadir):
-	os.mkdir(args.datadir)
+    os.mkdir(args.datadir)
 print('Saving Model:',outprefix+'.weights')
 torch.save(model.state_dict(),outprefix+'.weights')
 
@@ -133,11 +133,11 @@ model.eval()
 gold=np.array([])
 preds=np.array([])
 for batch in data_loader:
-	adjacency_matrix, node_features, y = batch
-	batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
-	y_pred=model(node_features,batch_mask,adjacency_matrix,None)
-	gold=np.append(gold,y.tolist())
-	preds=np.append(preds,y_pred.tolist())
+    adjacency_matrix, node_features, y = batch
+    batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
+    y_pred=model(node_features,batch_mask,adjacency_matrix,None)
+    gold=np.append(gold,y.tolist())
+    preds=np.append(preds,y_pred.tolist())
 r2=np.norrcoef(preds,gold)[0][1]**2
 rmse=np.sqrt(np.mean((preds-gold)**2))
 print('Training R2:',r2)
@@ -148,11 +148,11 @@ print('Test Set:')
 gold=np.array([])
 preds=np.array([])
 for batch in testdata_loader:
-	adjacency_matrix, node_features, y = batch
-	batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
-	y_pred=model(node_features,batch_mask,adjacency_matrix,None)
-	gold=np.append(gold,y.tolist())
-	preds=np.append(preds,y_pred.tolist())
+    adjacency_matrix, node_features, y = batch
+    batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
+    y_pred=model(node_features,batch_mask,adjacency_matrix,None)
+    gold=np.append(gold,y.tolist())
+    preds=np.append(preds,y_pred.tolist())
 r2=np.norrcoef(preds,gold)[0][1]**2
 rmse=np.sqrt(np.mean((preds-gold)**2))
 print('Test R2:',r2)
