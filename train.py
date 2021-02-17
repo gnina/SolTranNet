@@ -22,16 +22,16 @@ args=parser.parse_args()
 outprefix=f'{args.datadir}seed{args.seed}'
 
 #loading the dataset
-print('Trainfile:',trainfile)
-print('Testfile:',testfile)
+print('Trainfile:',args.trainfile)
+print('Testfile:',args.testfile)
 print('Loading train and test data')
 
 torch.manual_seed(args.seed)
 np.random.seed(args.seed)
 batch_size=8
-trainX, trainy=load_data_from_df(trainfile,add_dummy_node=True,one_hot_formal_charge=True)
+trainX, trainy=load_data_from_df(args.trainfile,add_dummy_node=True,one_hot_formal_charge=True)
 data_loader=construct_loader(trainX,trainy,batch_size)
-testX, testy=load_data_from_df(testfile,add_dummy_node=True,one_hot_formal_charge=True)
+testX, testy=load_data_from_df(args.testfile,add_dummy_node=True,one_hot_formal_charge=True)
 testdata_loader=construct_loader(testX,testy,batch_size,shuffle=False)
 
 #setting up the model
@@ -88,8 +88,8 @@ for epoch in range(50000):
     for t_batch in data_loader:
         t_adjacency_matrix, t_node_features, t_y = t_batch
         gold=np.append(gold,t_y.tolist())
-        t_batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
-        t_y_pred=model(node_features,batch_mask,adjacency_matrix,None)
+        t_batch_mask = torch.sum(torch.abs(t_node_features), dim=-1) != 0
+        t_y_pred=model(t_node_features,t_batch_mask,t_adjacency_matrix,None)
         preds=np.append(preds,t_y_pred.tolist())
 
     test_rmse=np.sqrt(np.mean((preds-gold)**2))
