@@ -106,8 +106,6 @@ for epoch in range(50000):
     #print the stats
     print(f'-----------------------------------------')
     print(f'Epoch: {epoch}/50000')
-    print(f'Training RMSE: {train_rmse}')
-    print(f'Training R2: {train_r2}')
     print(f'Test RMSE: {test_rmse}')
     print(f'Test R2: {test_r2}')
     print(f'Num since Improvement: {num_epochs_since_improvement}')
