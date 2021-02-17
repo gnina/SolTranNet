@@ -37,13 +37,6 @@ def load_data_from_df(dataset_path, add_dummy_node=True, one_hot_formal_charge=F
         A tuple (X, y) in which X is a list of graph descriptors (node features, adjacency matrices),
         and y is a list of the corresponding labels.
     """
-    feat_stamp = f'{"_dn" if add_dummy_node else ""}{"_ohfc" if one_hot_formal_charge else ""}'
-    feature_path = dataset_path.replace('.csv', f'{feat_stamp}.p')
-    if use_data_saving and os.path.exists(feature_path):
-        logging.info(f"Loading features stored at '{feature_path}'")
-        x_all, y_all = pickle.load(open(feature_path, "rb"))
-        return x_all, y_all
-
     data_df = pd.read_csv(dataset_path)
 
     data_x = data_df.iloc[:, 0].values
