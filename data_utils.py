@@ -22,8 +22,8 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 IntTensor = torch.cuda.IntTensor if use_cuda else torch.IntTensor
 DoubleTensor = torch.cuda.DoubleTensor if use_cuda else torch.DoubleTensor
 
-#TODO -- Remove use_data_saving option?
-def load_data_from_df(dataset_path, add_dummy_node=True, one_hot_formal_charge=False, use_data_saving=True):
+
+def load_data_from_df(dataset_path, add_dummy_node=True, one_hot_formal_charge=False):
     """Load and featurize data stored in a CSV file.
 
     Args:
@@ -32,8 +32,6 @@ def load_data_from_df(dataset_path, add_dummy_node=True, one_hot_formal_charge=F
                             the second one contains labels.
         add_dummy_node (bool): If True, a dummy node will be added to the molecular graph. Defaults to True.
         one_hot_formal_charge (bool): If True, formal charges on atoms are one-hot encoded. Defaults to False.
-        use_data_saving (bool): If True, saved features will be loaded from the dataset directory; if no feature file
-                                is present, the features will be saved after calculations. Defaults to True.
 
     Returns:
         A tuple (X, y) in which X is a list of graph descriptors (node features, adjacency matrices),
@@ -56,9 +54,6 @@ def load_data_from_df(dataset_path, add_dummy_node=True, one_hot_formal_charge=F
 
     x_all, y_all = load_data_from_smiles(data_x, data_y, add_dummy_node=add_dummy_node,
                                          one_hot_formal_charge=one_hot_formal_charge)
-    if use_data_saving and not os.path.exists(feature_path):
-        logging.info(f"Saving features at '{feature_path}'")
-        pickle.dump((x_all, y_all), open(feature_path, "wb"))
 
     return x_all, y_all
 
@@ -90,9 +85,7 @@ def load_data_from_smiles(x_smiles, labels, add_dummy_node=True, one_hot_formal_
             except:
                 AllChem.Compute2DCoords(mol)
             '''
-            #afm, adj, dist = featurize_mol(mol, add_dummy_node, one_hot_formal_charge)
             afm, adj = featurize_mol(mol, add_dummy_node, one_hot_formal_charge)
-            #x_all.append([afm, adj, dist])
             x_all.append([afm, adj])
             y_all.append([label])
         except ValueError as e:
@@ -121,11 +114,6 @@ def featurize_mol(mol, add_dummy_node, one_hot_formal_charge):
         end_atom = bond.GetEndAtom().GetIdx()
         adj_matrix[begin_atom, end_atom] = adj_matrix[end_atom, begin_atom] = 1
 
-    #conf = mol.GetConformer()
-    #pos_matrix = np.array([[conf.GetAtomPosition(k).x, conf.GetAtomPosition(k).y, conf.GetAtomPosition(k).z]
-    #                       for k in range(mol.GetNumAtoms())])
-    #dist_matrix = pairwise_distances(pos_matrix)
-
     if add_dummy_node:
         m = np.zeros((node_features.shape[0] + 1, node_features.shape[1] + 1))
         m[1:, 1:] = node_features
@@ -136,11 +124,7 @@ def featurize_mol(mol, add_dummy_node, one_hot_formal_charge):
         m[1:, 1:] = adj_matrix
         adj_matrix = m
 
-        #m = np.full((dist_matrix.shape[0] + 1, dist_matrix.shape[1] + 1), 1e6)
-        #m[1:, 1:] = dist_matrix
-        #dist_matrix = m
-
-    return node_features, adj_matrix#, dist_matrix
+    return node_features, adj_matrix
 
 
 def get_atom_features(atom, one_hot_formal_charge=True):
@@ -207,7 +191,6 @@ class Molecule:
     def __init__(self, x, y, index):
         self.node_features = x[0]
         self.adjacency_matrix = x[1]
-        #self.distance_matrix = x[2]
         self.y = y
         self.index = index
 
@@ -259,7 +242,6 @@ def mol_collate_func(batch):
         A list of FloatTensors with padded molecule features:
         adjacency matrices, node features, distance matrices, and labels.
     """
-    #adjacency_list, distance_list, features_list = [], [], []
     adjacency_list, features_list = [], []
     labels = []
 
@@ -274,10 +256,8 @@ def mol_collate_func(batch):
 
     for molecule in batch:
         adjacency_list.append(pad_array(molecule.adjacency_matrix, (max_size, max_size)))
-        #distance_list.append(pad_array(molecule.distance_matrix, (max_size, max_size)))
         features_list.append(pad_array(molecule.node_features, (max_size, molecule.node_features.shape[1])))
 
-    #return [FloatTensor(features) for features in (adjacency_list, features_list, distance_list, labels)]
     return [FloatTensor(features) for features in (adjacency_list, features_list, labels)]
 
 def construct_dataset(x_all, y_all):
@@ -294,7 +274,6 @@ def construct_dataset(x_all, y_all):
               for i, data in enumerate(zip(x_all, y_all))]
     return MolDataset(output)
 
-#TODO -- set shuffle to False?
 def construct_loader(x, y, batch_size, shuffle=True):
     """Construct a data loader for the provided data.
 
