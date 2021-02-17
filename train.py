@@ -85,7 +85,7 @@ for epoch in range(50000):
 	gold=np.array([])
 	preds=np.array([])
 
-	for t_batch in testdata_loader:
+	for t_batch in data_loader:
 		t_adjacency_matrix, t_node_features, t_y = t_batch
 		gold=np.append(gold,t_y.tolist())
 		t_batch_mask = torch.sum(torch.abs(node_features), dim=-1) != 0
