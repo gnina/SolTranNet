@@ -14,15 +14,13 @@ from utils import xavier_normal_small_init_, xavier_uniform_small_init_
 
 
 ### Model definition
-def make_model(d_atom, N=2, d_model=128, h=8, dropout=0.1, 
-               lambda_attention=0.3,
+def make_model(d_atom, N=2, d_model=128, h=8, dropout=0.1, lambda_attention=0.3,
                N_dense=2, leaky_relu_slope=0.0, aggregation_type='mean', 
-               dense_output_nonlinearity='relu',
-               n_output=1, control_edges=False,
+               dense_output_nonlinearity='relu',n_output=1,
                scale_norm=False, init_type='uniform', use_adapter=False, n_generator_layers=1):
     "Helper: Construct a model from hyperparameters."
     c = copy.deepcopy
-    attn = MultiHeadedAttention(h, d_model, dropout, lambda_attention, control_edges)
+    attn = MultiHeadedAttention(h, d_model, dropout, lambda_attention)
     ff = PositionwiseFeedForward(d_model, N_dense, dropout, leaky_relu_slope, dense_output_nonlinearity)
     model = GraphTransformer(
         Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout, scale_norm, use_adapter), N, scale_norm),
@@ -192,28 +190,9 @@ class EncoderLayer(nn.Module):
         return self.sublayer[1](x, self.feed_forward)
 
     
-### Attention           
-
-class EdgeFeaturesLayer(nn.Module):
-    def __init__(self, d_model, d_edge, h, dropout):
-        super(EdgeFeaturesLayer, self).__init__()
-        assert d_model % h == 0
-        d_k = d_model // h
-        self.linear = nn.Linear(d_edge, 1, bias=False)
-        with torch.no_grad():
-            self.linear.weight.fill_(0.25)
-        # self.dropout = nn.Dropout(dropout)
-
-    def forward(self, x):
-        p_edge = x.permute(0, 2, 3, 1)
-        p_edge = self.linear(p_edge).permute(0, 3, 1, 2)
-        return torch.relu(p_edge)
-    
-
+### Attention
 def attention(query, key, value, adj_matrix, edges_att,
-              mask=None, dropout=None, 
-              lambdas=(0.5, 0.5),
-              control_edges=False,
+              mask=None, dropout=None, lambdas=(0.5, 0.5),
               eps=1e-6, inf=1e12):
     "Compute 'Scaled Dot Product Attention'"
     d_k = query.size(-1)
@@ -239,8 +218,7 @@ def attention(query, key, value, adj_matrix, edges_att,
 
 
 class MultiHeadedAttention(nn.Module):
-    def __init__(self, h, d_model, dropout=0.1, lambda_attention=0.5,
-                 control_edges=False):
+    def __init__(self, h, d_model, dropout=0.1, lambda_attention=0.5):
         "Take in model size and number of heads."
         super(MultiHeadedAttention, self).__init__()
         assert d_model % h == 0
@@ -252,7 +230,6 @@ class MultiHeadedAttention(nn.Module):
         self.linears = clones(nn.Linear(d_model, d_model), 4)
         self.attn = None
         self.dropout = nn.Dropout(p=dropout)
-        self.control_edges = control_edges
         
     def forward(self, query, key, value, adj_matrix, edges_att, mask=None):
         "Implements Figure 2"
@@ -268,9 +245,7 @@ class MultiHeadedAttention(nn.Module):
         
         # 2) Apply attention on all the projected vectors in batch. 
         x, self.attn, self.self_attn = attention(query, key, value, adj_matrix, edges_att,
-                                                 mask=mask, dropout=self.dropout,
-                                                 lambdas=self.lambdas,
-                                                 control_edges=self.control_edges)
+                                                 mask=mask, dropout=self.dropout, lambdas=self.lambdas)
         
         # 3) "Concat" using a view and apply a final linear. 
         x = x.transpose(1, 2).contiguous() \
