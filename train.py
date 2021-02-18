@@ -119,6 +119,7 @@ for epoch in range(50000):
     #now we check if dynamic stopping was signalled
     if num_epochs_since_improvement==4:
         print(f'Early termination signalled! Stopping training!\n{epoch}/50000 Completed.')
+        break
 
 #Saving the resulting weights
 if not os.path.isdir(args.datadir):
