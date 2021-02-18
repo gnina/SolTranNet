@@ -55,6 +55,9 @@ model=make_model(**model_params)
 param_count=sum(p.numel() for p in model.parameters() if p.requires_grad)
 print('Number of parameters:',param_count)
 
+torch.cuda.empty_cache()
+model.cuda()
+
 #starting the training loop
 model.train()
 criterion=torch.nn.SmoothL1Loss(reduction='mean')

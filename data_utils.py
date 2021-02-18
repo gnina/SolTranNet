@@ -16,7 +16,7 @@ from rdkit.Chem import MolFromSmiles
 from sklearn.metrics import pairwise_distances
 from torch.utils.data import Dataset
 
-use_cuda = False#torch.cuda.is_available()
+use_cuda = torch.cuda.is_available()
 FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
 LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 IntTensor = torch.cuda.IntTensor if use_cuda else torch.IntTensor
