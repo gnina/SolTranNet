@@ -5,7 +5,7 @@ from data_utils import load_data_from_smiles
 from data_utils import construct_loader
 
 def predict(smiles, batch_size=32):
-     """Load and featurize data stored in a CSV file.
+    """Load and featurize data stored in a CSV file.
     Args:
         smiles ([str]): A list of SMILES strings, upon which we wish to predict the solubilities for.
     Returns:
