@@ -4,18 +4,19 @@ Maziarka et al "Molecule Attention Transformer" -> https://github.com/ardigen/MA
 """
 
 import math, copy
-import numpy as np
+#import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-from utils import xavier_normal_small_init_, xavier_uniform_small_init_
+#from utils import xavier_normal_small_init_, xavier_uniform_small_init_
 
 
-### Model definition
-def make_model(d_atom, N=2, d_model=128, h=8, dropout=0.1, lambda_attention=0.3,
-               N_dense=2, leaky_relu_slope=0.0, aggregation_type='mean', 
+### Model definition -- the default values are the architecture for SolTranNet
+#TODO -- add the correct number for d_atom
+def make_model(d_atom=28, N=8, d_model=8, h=2, dropout=0.1, lambda_attention=0.5,
+               N_dense=1, leaky_relu_slope=0.0, aggregation_type='mean', 
                dense_output_nonlinearity='relu',n_output=1,
                scale_norm=False, init_type='uniform', use_adapter=False, n_generator_layers=1):
     "Helper: Construct a model from hyperparameters."
@@ -27,6 +28,7 @@ def make_model(d_atom, N=2, d_model=128, h=8, dropout=0.1, lambda_attention=0.3,
         Embeddings(d_model, d_atom, dropout),
         Generator(d_model, aggregation_type, n_output, n_generator_layers, leaky_relu_slope, dropout, scale_norm))
     
+    '''
     # This was important from their code. 
     # Initialize parameters with Glorot / fan_avg.
     for p in model.parameters():
@@ -39,6 +41,17 @@ def make_model(d_atom, N=2, d_model=128, h=8, dropout=0.1, lambda_attention=0.3,
                 xavier_normal_small_init_(p)
             elif init_type == 'small_uniform_init':
                 xavier_uniform_small_init_(p)
+    '''
+
+    #TODO -- check that the loading of these weights is actually correct.
+    if torch.cuda.is_available():
+        device=torch.device('cpu')
+        model.load_state_dict(torch.load('soltrannet/weights/filename',map_location=device))
+    else:
+        device=torch.device("cuda")
+        model.load_state_dict(torch.load('soltrannet/weights/filename'))
+        model.to(device)
+
     return model
 
 

@@ -5,15 +5,14 @@ Coley et al "Convolutional Embedding of Attributed Molecular Graphs for Physical
 """
 
 import logging
-import os
-import pickle
+#import os
+#import pickle
 import numpy as np
-import pandas as pd
 import torch
 from rdkit import Chem
-from rdkit.Chem import AllChem
+#from rdkit.Chem import AllChem
 from rdkit.Chem import MolFromSmiles
-from sklearn.metrics import pairwise_distances
+#from sklearn.metrics import pairwise_distances
 from torch.utils.data import Dataset
 
 use_cuda = torch.cuda.is_available()
@@ -23,20 +22,19 @@ IntTensor = torch.cuda.IntTensor if use_cuda else torch.IntTensor
 DoubleTensor = torch.cuda.DoubleTensor if use_cuda else torch.DoubleTensor
 
 
-def load_data_from_df(dataset_path, add_dummy_node=True, one_hot_formal_charge=False):
+def load_data_from_file(dataset_path, add_dummy_node=True, one_hot_formal_charge=True):
     """Load and featurize data stored in a CSV file.
 
     Args:
-        dataset_path (str): A path to the CSV file containing the data. It should have two columns:
-                            the first one contains SMILES strings of the compounds,
-                            the second one contains labels.
+        dataset_path (str): A path to the file containing the SMILES. It should have one column containing SMILES strings of the compounds.
         add_dummy_node (bool): If True, a dummy node will be added to the molecular graph. Defaults to True.
-        one_hot_formal_charge (bool): If True, formal charges on atoms are one-hot encoded. Defaults to False.
+        one_hot_formal_charge (bool): If True, formal charges on atoms are one-hot encoded. Defaults to True.
 
     Returns:
-        A tuple (X, y) in which X is a list of graph descriptors (node features, adjacency matrices),
-        and y is a list of the corresponding labels.
+        A tuple of graph descriptors (node features, adjacency matrices).
     """
+
+    '''
     data_df = pd.read_csv(dataset_path)
 
     data_x = data_df.iloc[:, 0].values
@@ -49,35 +47,31 @@ def load_data_from_df(dataset_path, add_dummy_node=True, one_hot_formal_charge=F
                                          one_hot_formal_charge=one_hot_formal_charge)
 
     return x_all, y_all
+    '''
 
+    smiles=[x.rstrip() for x in open(dataset_path).readlines()]
+    x_all = load_data_from_smiles(smiles, add_dummy_node=True, one_hot_formal_charge=True)
 
-def load_data_from_smiles(x_smiles, labels, add_dummy_node=True, one_hot_formal_charge=False):
+    return x_all
+
+def load_data_from_smiles(x_smiles, add_dummy_node=True, one_hot_formal_charge=True):
     """Load and featurize data from lists of SMILES strings and labels.
 
     Args:
         x_smiles (list[str]): A list of SMILES strings.
-        labels (list[float]): A list of the corresponding labels.
         add_dummy_node (bool): If True, a dummy node will be added to the molecular graph. Defaults to True.
-        one_hot_formal_charge (bool): If True, formal charges on atoms are one-hot encoded. Defaults to False.
+        one_hot_formal_charge (bool): If True, formal charges on atoms are one-hot encoded. Defaults to True.
 
     Returns:
-        A tuple (X, y) in which X is a list of graph descriptors (node features, adjacency matrices, distance matrices),
-        and y is a list of the corresponding labels.
+        A tuple of lists of graph descriptors (node features, adjacency matrices)
     """
+
+    '''
     x_all, y_all = [], []
 
     for smiles, label in zip(x_smiles, labels):
         try:
             mol = MolFromSmiles(smiles)
-            '''
-            try:
-                mol = Chem.AddHs(mol)
-                AllChem.EmbedMolecule(mol, maxAttempts=5000)
-                AllChem.UFFOptimizeMolecule(mol)
-                mol = Chem.RemoveHs(mol)
-            except:
-                AllChem.Compute2DCoords(mol)
-            '''
             afm, adj = featurize_mol(mol, add_dummy_node, one_hot_formal_charge)
             x_all.append([afm, adj])
             y_all.append([label])
@@ -85,7 +79,18 @@ def load_data_from_smiles(x_smiles, labels, add_dummy_node=True, one_hot_formal_
             logging.warning('the SMILES ({}) can not be converted to a graph.\nREASON: {}'.format(smiles, e))
 
     return x_all, y_all
+    '''
 
+    x_all = []
+    for smiles in x_smiles:
+        try:
+            mol = MolFromSmiles(smiles)
+            afm, adj = featurize_mol(mol, add_dummy_node, one_hot_formal_charge)
+            x_all.append([afm, adj])
+        except ValueError as e:
+            logging.warning('the SMILES ({}) can not be converted to a graph.\nREASON: {}'.format(smiles,e))
+
+    return x_all
 
 def featurize_mol(mol, add_dummy_node, one_hot_formal_charge):
     """Featurize molecule.
@@ -181,10 +186,10 @@ class Molecule:
         - self.label: 0 neg, 1 pos -1 missing for different target.
     """
 
-    def __init__(self, x, y, index):
+    def __init__(self, x, index):
         self.node_features = x[0]
         self.adjacency_matrix = x[1]
-        self.y = y
+        #self.y = y
         self.index = index
 
 
@@ -233,17 +238,19 @@ def mol_collate_func(batch):
 
     Returns:
         A list of FloatTensors with padded molecule features:
-        adjacency matrices, node features, distance matrices, and labels.
+        adjacency matrices, node features.
     """
     adjacency_list, features_list = [], []
-    labels = []
+    #labels = []
 
     max_size = 0
     for molecule in batch:
+        '''
         if type(molecule.y[0]) == np.ndarray:
             labels.append(molecule.y[0])
         else:
             labels.append(molecule.y)
+        '''
         if molecule.adjacency_matrix.shape[0] > max_size:
             max_size = molecule.adjacency_matrix.shape[0]
 
@@ -251,35 +258,34 @@ def mol_collate_func(batch):
         adjacency_list.append(pad_array(molecule.adjacency_matrix, (max_size, max_size)))
         features_list.append(pad_array(molecule.node_features, (max_size, molecule.node_features.shape[1])))
 
-    return [FloatTensor(features) for features in (adjacency_list, features_list, labels)]
+    #return [FloatTensor(features) for features in (adjacency_list, features_list, labels)]
+    return [FloatTensor(features) for features in (adjacency_list, features_list)]
 
-def construct_dataset(x_all, y_all):
+def construct_dataset(x_all):
     """Construct a MolDataset object from the provided data.
 
     Args:
         x_all (list): A list of molecule features.
-        y_all (list): A list of the corresponding labels.
 
     Returns:
         A MolDataset object filled with the provided data.
     """
     output = [Molecule(data[0], data[1], i)
-              for i, data in enumerate(zip(x_all, y_all))]
+              for i, data in enumerate(x_all)]
     return MolDataset(output)
 
-def construct_loader(x, y, batch_size, shuffle=True):
+def construct_loader(x, batch_size=32, shuffle=False):
     """Construct a data loader for the provided data.
 
     Args:
         x (list): A list of molecule features.
-        y (list): A list of the corresponding labels.
-        batch_size (int): The batch size.
-        shuffle (bool): If True the data will be loaded in a random order. Defaults to True.
+        batch_size (int): The batch size. Defaults to 32
+        shuffle (bool): If True the data will be loaded in a random order. Defaults to False.
 
     Returns:
         A DataLoader object that yields batches of padded molecule features.
     """
-    data_set = construct_dataset(x, y)
+    data_set = construct_dataset(x)
     loader = torch.utils.data.DataLoader(dataset=data_set,
                                          batch_size=batch_size,
                                          collate_fn=mol_collate_func,
