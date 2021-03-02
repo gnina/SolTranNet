@@ -15,7 +15,6 @@ def predict(smiles, batch_size=32):
     #first we calculate the molecular graphs from the SMILES strings
     #TODO -- get the correct size for dmodel
     X = load_data_from_smiles(smiles)
-    print(X)
     assert X[0][0].shape[1]==28
     data_loader = construct_loader(X, batch_size=batch_size)
     
