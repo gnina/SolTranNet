@@ -46,10 +46,10 @@ def make_model(d_atom=28, N=8, d_model=8, h=2, dropout=0.1, lambda_attention=0.5
     #TODO -- check that the loading of these weights is actually correct.
     if torch.cuda.is_available():
         device=torch.device('cpu')
-        model.load_state_dict(torch.load('soltrannet/weights/filename',map_location=device))
+        model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights',map_location=device))
     else:
         device=torch.device("cuda")
-        model.load_state_dict(torch.load('soltrannet/weights/filename'))
+        model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights'))
         model.to(device)
 
     return model

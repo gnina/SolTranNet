@@ -1,8 +1,8 @@
 import torch
 import numpy as np
-from .transformer import make_model
-from .data_utils import load_data_from_smiles
-from .data_utils import construct_loader
+from transformer import make_model
+from data_utils import load_data_from_smiles
+from data_utils import construct_loader
 
 def predict(smiles, batch_size=32):
 	 """Load and featurize data stored in a CSV file.
@@ -59,10 +59,11 @@ def check_smiles(smiles, features):
 
 		#use the calculated molecular features to determine if an "Other" typed atom exists in the molecule.
 		other_type=False
+		other_filter=np.array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.,0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
 		#TODO -- figure out how the features work for a given smile & work with vector function
 		#		if atom_feature is Other  & its adjacency matrix is connected, we detected at least 1 "Other  type" & can emit the warning
-		for atom_feature, adj in f:
-			if atom_feature[10]==1 and adj
+		if (f[0]*other_filter).sum() >= 1:
+			other_type=True
 
 		if other_type:
 			warn+='Other-typed Atom(s), '
