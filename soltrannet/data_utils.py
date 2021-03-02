@@ -270,7 +270,7 @@ def construct_dataset(x_all):
     Returns:
         A MolDataset object filled with the provided data.
     """
-    output = [Molecule(data[0], data[1], i)
+    output = [Molecule(data, i)
               for i, data in enumerate(x_all)]
     return MolDataset(output)
 
