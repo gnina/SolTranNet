@@ -22,6 +22,10 @@ def predict(smiles, batch_size=32):
     #now we generate our predictions
     # TODO -- test that GPU/CPU works
     model=make_model()
+    use_cuda = torch.cuda.is_available()
+    if use_cuda:
+        model.to("cuda")
+
 
     predictions=np.array([])
     for batch in data_loader:
