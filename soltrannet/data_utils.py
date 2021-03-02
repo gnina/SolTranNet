@@ -286,8 +286,5 @@ def construct_loader(x, batch_size=32, shuffle=False):
         A DataLoader object that yields batches of padded molecule features.
     """
     data_set = construct_dataset(x)
-    loader = torch.utils.data.DataLoader(dataset=data_set,
-                                         batch_size=batch_size,
-                                         collate_fn=mol_collate_func,
-                                         shuffle=shuffle)
+    loader = torch.utils.data.DataLoader(dataset=data_set,batch_size=batch_size,collate_fn=mol_collate_func,shuffle=shuffle)
     return loader
