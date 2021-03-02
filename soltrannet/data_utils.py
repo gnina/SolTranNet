@@ -51,7 +51,7 @@ def load_data_from_file(dataset_path, add_dummy_node=True, one_hot_formal_charge
 
     smiles=[x.rstrip() for x in open(dataset_path).readlines()]
     x_all = load_data_from_smiles(smiles, add_dummy_node=True, one_hot_formal_charge=True)
-
+    
     return x_all
 
 def load_data_from_smiles(x_smiles, add_dummy_node=True, one_hot_formal_charge=True):

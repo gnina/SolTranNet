@@ -19,7 +19,7 @@ def predict(smiles, batch_size=32):
     X = load_data_from_smiles(smiles)
     assert X[0][0].shape[1]==28
     data_loader = construct_loader(X, batch_size)
-
+    
     #now we generate our predictions
     # TODO -- test that GPU/CPU works
     model=make_model()
