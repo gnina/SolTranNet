@@ -13,13 +13,12 @@ def predict(smiles, batch_size=32):
     """
 
     #first we calculate the molecular graphs from the SMILES strings
-    #TODO -- get the correct size for dmodel
     X = load_data_from_smiles(smiles)
     assert X[0][0].shape[1]==28
     data_loader = construct_loader(X, batch_size=batch_size)
     
     #now we generate our predictions
-    # TODO -- test that GPU/CPU works
+    # TODO -- test that CPU works
     model=make_model()
     use_cuda = torch.cuda.is_available()
     if use_cuda:
@@ -62,8 +61,6 @@ def check_smiles(smiles, features):
         #use the calculated molecular features to determine if an "Other" typed atom exists in the molecule.
         other_type=False
         other_filter=np.array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.,0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
-        #TODO -- figure out how the features work for a given smile & work with vector function
-        #       if atom_feature is Other  & its adjacency matrix is connected, we detected at least 1 "Other  type" & can emit the warning
         if (f[0]*other_filter).sum() >= 1:
             other_type=True
 
