@@ -34,21 +34,6 @@ def load_data_from_file(dataset_path, add_dummy_node=True, one_hot_formal_charge
         A tuple of graph descriptors (node features, adjacency matrices).
     """
 
-    '''
-    data_df = pd.read_csv(dataset_path)
-
-    data_x = data_df.iloc[:, 0].values
-    data_y = data_df.iloc[:, 1].values
-
-    if data_y.dtype == np.float64:
-        data_y = data_y.astype(np.float32)
-
-    x_all, y_all = load_data_from_smiles(data_x, data_y, add_dummy_node=add_dummy_node,
-                                         one_hot_formal_charge=one_hot_formal_charge)
-
-    return x_all, y_all
-    '''
-
     smiles=[x.rstrip() for x in open(dataset_path).readlines()]
     x_all = load_data_from_smiles(smiles, add_dummy_node=True, one_hot_formal_charge=True)
     
@@ -65,21 +50,6 @@ def load_data_from_smiles(x_smiles, add_dummy_node=True, one_hot_formal_charge=T
     Returns:
         A tuple of lists of graph descriptors (node features, adjacency matrices)
     """
-
-    '''
-    x_all, y_all = [], []
-
-    for smiles, label in zip(x_smiles, labels):
-        try:
-            mol = MolFromSmiles(smiles)
-            afm, adj = featurize_mol(mol, add_dummy_node, one_hot_formal_charge)
-            x_all.append([afm, adj])
-            y_all.append([label])
-        except ValueError as e:
-            logging.warning('the SMILES ({}) can not be converted to a graph.\nREASON: {}'.format(smiles, e))
-
-    return x_all, y_all
-    '''
 
     x_all = []
     for smiles in x_smiles:
@@ -237,20 +207,12 @@ def mol_collate_func(batch):
         batch (list[Molecule]): A batch of raw molecules.
 
     Returns:
-        A list of FloatTensors with padded molecule features:
-        adjacency matrices, node features.
+        A list of FloatTensors with padded molecule features: (adjacency matrices, node features).
     """
     adjacency_list, features_list = [], []
-    #labels = []
 
     max_size = 0
     for molecule in batch:
-        '''
-        if type(molecule.y[0]) == np.ndarray:
-            labels.append(molecule.y[0])
-        else:
-            labels.append(molecule.y)
-        '''
         if molecule.adjacency_matrix.shape[0] > max_size:
             max_size = molecule.adjacency_matrix.shape[0]
 
@@ -258,7 +220,6 @@ def mol_collate_func(batch):
         adjacency_list.append(pad_array(molecule.adjacency_matrix, (max_size, max_size)))
         features_list.append(pad_array(molecule.node_features, (max_size, molecule.node_features.shape[1])))
 
-    #return [FloatTensor(features) for features in (adjacency_list, features_list, labels)]
     return [FloatTensor(features) for features in (adjacency_list, features_list)]
 
 def construct_dataset(x_all):
