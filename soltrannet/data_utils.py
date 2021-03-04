@@ -5,14 +5,10 @@ Coley et al "Convolutional Embedding of Attributed Molecular Graphs for Physical
 """
 
 import logging
-#import os
-#import pickle
 import numpy as np
 import torch
 from rdkit import Chem
-#from rdkit.Chem import AllChem
 from rdkit.Chem import MolFromSmiles
-#from sklearn.metrics import pairwise_distances
 from torch.utils.data import Dataset
 
 use_cuda = torch.cuda.is_available()
@@ -21,23 +17,6 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 IntTensor = torch.cuda.IntTensor if use_cuda else torch.IntTensor
 DoubleTensor = torch.cuda.DoubleTensor if use_cuda else torch.DoubleTensor
 
-
-def load_data_from_file(dataset_path, add_dummy_node=True, one_hot_formal_charge=True):
-    """Load and featurize data stored in a CSV file.
-
-    Args:
-        dataset_path (str): A path to the file containing the SMILES. It should have one column containing SMILES strings of the compounds.
-        add_dummy_node (bool): If True, a dummy node will be added to the molecular graph. Defaults to True.
-        one_hot_formal_charge (bool): If True, formal charges on atoms are one-hot encoded. Defaults to True.
-
-    Returns:
-        A tuple of graph descriptors (node features, adjacency matrices).
-    """
-
-    smiles=[x.rstrip() for x in open(dataset_path).readlines()]
-    x_all = load_data_from_smiles(smiles, add_dummy_node=True, one_hot_formal_charge=True)
-    
-    return x_all
 
 def load_data_from_smiles(x_smiles, add_dummy_node=True, one_hot_formal_charge=True):
     """Load and featurize data from lists of SMILES strings and labels.
