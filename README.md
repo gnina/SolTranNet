@@ -16,16 +16,20 @@ SolTranNet is an optimized fork of the [Molecule Attention Transformer](https://
 
 ~~6) Add liscence?~~
 
-7) Test CPU version of in python works correctly
+~~7) Test CPU version of in python works correctly~~
+
 8) Create/test command line version
 9) make pip installable
 10) Finish README
 
 ## Requirements
-INSTRUCTIONS -- torch, numpy, RDKit
+ - PyTorch 1.7
+ - RDKit 2020.03.1dev1
 
-### Soft Requirements?
-CUDA
+### Soft Requirements
+ - CUDA 10.1 or CUDA 10.2
+
+We heavily suggest installing CUDA and compiling PyTorch with it enabled to have faster models.
 
 ## Installation
 INSTRUCTIONS
