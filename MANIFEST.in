@@ -1,0 +1,8 @@
+#Include the README
+include README.md
+
+#Include the licesnse
+include LICENSE.txt
+
+#Include setup.py
+include setup.py
