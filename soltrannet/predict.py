@@ -29,13 +29,14 @@ def predict(smiles, batch_size=32):
         device=torch.device('cpu')
         model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights',map_location=device))
 
-
+    model.eval()
     predictions=np.array([])
-    for batch in data_loader:
-        adjacency_matrix, node_features = batch
-        batch_mask = torch.sum(torch.abs(node_features),dim=-1) != 0
-        pred = model(node_features, batch_mask, adjacency_matrix, None)
-        predictions=np.append(predictions,pred.tolist())
+    with torch.no_grad():
+        for batch in data_loader:
+            adjacency_matrix, node_features = batch
+            batch_mask = torch.sum(torch.abs(node_features),dim=-1) != 0
+            pred = model(node_features, batch_mask, adjacency_matrix, None)
+            predictions=np.append(predictions,pred.tolist())
 
 
     #lastly we determine which SMILES might have less accurate predictions
