@@ -21,7 +21,7 @@ def predict(smiles, batch_size=32):
     # TODO -- load weights properly
     model=make_model()
     use_cuda = torch.cuda.is_available()
-    if use_cua:
+    if use_cuda:
         device=torch.device("cuda")
         model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights'))
         model.to(device)
