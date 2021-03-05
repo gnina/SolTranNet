@@ -18,11 +18,16 @@ def predict(smiles, batch_size=32):
     data_loader = construct_loader(X, batch_size=batch_size)
     
     #now we generate our predictions
-    # TODO -- test that CPU works
+    # TODO -- load weights properly
     model=make_model()
     use_cuda = torch.cuda.is_available()
-    if use_cuda:
-        model.to("cuda")
+    if use_cua:
+        device=torch.device("cuda")
+        model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights'))
+        model.to(device)
+    else:
+        device=torch.device('cpu')
+        model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights',map_location=device))
 
 
     predictions=np.array([])

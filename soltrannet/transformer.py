@@ -24,14 +24,6 @@ def make_model(d_atom=28, N=8, d_model=8, h=2, dropout=0.1, lambda_attention=0.5
         Embeddings(d_model, d_atom, dropout),
         Generator(d_model, aggregation_type, n_output, n_generator_layers, leaky_relu_slope, dropout, scale_norm))
 
-    if not torch.cuda.is_available():
-        device=torch.device('cpu')
-        model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights',map_location=device))
-    else:
-        device=torch.device("cuda")
-        model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights'))
-        #model.to(device)  <-- doesn't work when returning the model, but is needed in the prediction script.
-
     return model
 
 
