@@ -7,7 +7,7 @@ long_description = (here / "README.md").read_text(encoding='utf-8')
 
 setup(
 
-    name='soltrannet',
+    name='soltrannet-francoep',
 
     version='0.9.0',
 
