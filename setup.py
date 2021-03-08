@@ -26,9 +26,10 @@ setup(
     #TODO -- test other versions of Python3?  .7 .8 .9?
     classifiers=[
         'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Scientists',
-        'Topic :: Machine Learning :: Tool',
-        'License :: Apache-2.0',
+        'Intended Audience :: Science/Research',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+        'Topic :: Scientific/Engineering :: Chemistry',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
