@@ -31,16 +31,18 @@ setup(
         'License :: Apache-2.0',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3 :: Only',
     ],
 
     keywords='ML, solubility, tool',
 
-    package_dir={'':'soltrannet'},
+    #package_dir={'':'soltrannet'},
 
-    packages=find_packages(where='soltrannet'),
+    packages=find_packages(),
 
-    #TODO -- check that this actually works
     python_requires='>=3.6, <4',
 
     install_requires=[
