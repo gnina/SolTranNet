@@ -53,7 +53,7 @@ setup(
     ],
 
     package_data={
-        'weights':['soltrannet_aqsol_trained.weights'],
+        'soltrannet':['soltrannet_aqsol_trained.weights'],
     },
 
     entry_points={

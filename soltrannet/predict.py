@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import pkg_resources
 from .transformer import make_model
 from .data_utils import load_data_from_smiles
 from .data_utils import construct_loader
@@ -19,15 +20,20 @@ def predict(smiles, batch_size=32):
     
     #now we generate our predictions
     # TODO -- load weights properly
+
+    weights=pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")
+
     model=make_model()
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         device=torch.device("cuda")
-        model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights'))
+        #model.load_state_dict(torch.load('soltrannet/soltrannet_aqsol_trained.weights'))
+        model.load_state_dict(torch.load(weights))
         model.to(device)
     else:
         device=torch.device('cpu')
-        model.load_state_dict(torch.load('soltrannet/weights/soltrannet_aqsol_trained.weights',map_location=device))
+        #model.load_state_dict(torch.load('soltrannet/soltrannet_aqsol_trained.weights',map_location=device))
+        model.load_state_dict(torch.load(weights,map_location=device))
 
     model.eval()
     predictions=np.array([])
