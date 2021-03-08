@@ -7,9 +7,9 @@ long_description = (here / "README.md").read_text(encoding='utf-8')
 
 setup(
 
-    name='soltrannet-francoep',
+    name='soltrannet',
 
-    version='0.9.0',
+    version='1.0.1',
 
     description='A molecule attention transformer for predicting aqueous solubility',
 
