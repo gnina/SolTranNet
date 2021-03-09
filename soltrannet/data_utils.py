@@ -7,9 +7,13 @@ Coley et al "Convolutional Embedding of Attributed Molecular Graphs for Physical
 import logging
 import numpy as np
 import torch
-from rdkit import Chem
-from rdkit.Chem import MolFromSmiles
+import sys
 from torch.utils.data import Dataset
+try:
+    from rdkit import Chem
+    from rdkit.Chem import MolFromSmiles
+except:
+    sys.exit('rdkit is not installed. Install with:\nconda install rdkit')
 
 use_cuda = torch.cuda.is_available()
 FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor

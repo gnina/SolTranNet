@@ -9,7 +9,7 @@ setup(
 
     name='soltrannet',
 
-    version='1.0.1',
+    version='1.0.2',
 
     description='A molecule attention transformer for predicting aqueous solubility',
 
@@ -19,11 +19,8 @@ setup(
 
     url='https://github.com/gnina/SolTranNet',
 
-    #should I include these?
     author='Paul Francoeur',
-    author_email='paf46@pitt.edu',
 
-    #TODO -- test other versions of Python3?  .7 .8 .9?
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
@@ -39,8 +36,6 @@ setup(
     ],
 
     keywords='ML, solubility, tool',
-
-    #package_dir={'':'soltrannet'},
 
     packages=find_packages(),
 
