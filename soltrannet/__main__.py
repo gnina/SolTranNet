@@ -1,5 +1,4 @@
-from . import run
-import argparse
+from . import _run
 
 if __name__=='__main__':
-    run()
+    _run()
