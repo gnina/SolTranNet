@@ -31,8 +31,6 @@ def predict(smiles, batch_size=32):
     data_loader = construct_loader(X, batch_size=batch_size)
     
     #set the model to evaluate mode and the correct device
-    if torch.cuda.is_available():
-        _MODEL.to(torch.device("cuda"))
     _MODEL.eval()
 
     #Now we can generate our predictions.
