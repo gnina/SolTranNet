@@ -11,10 +11,12 @@ if torch.cuda.is_available():
     _DEVICE=torch.device("cuda")
     _MODEL.load_state_dict(torch.load(pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")))
     _MODEL.to(_DEVICE)
+    print('Using GPU')
 else:
     _DEVICE=torch.device('cpu')
     _MODEL.load_state_dict(torch.load(pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights"),map_location=_DEVICE))
-
+    print('Using CPU')
+    
 def predict(smiles, batch_size=32):
     """Predict Solubilities for a list of SMILES.
     Args:
