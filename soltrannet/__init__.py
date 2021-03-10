@@ -3,7 +3,7 @@ import argparse
 import sys, multiprocessing
 import torch
 
-def run():
+def _run():
     parser=argparse.ArgumentParser(description="Run SolTranNet aqueous solubility predictor")
     parser.add_argument('input',nargs='?',type=argparse.FileType('r'),default=sys.stdin,help='PATH to the file containing the SMILES you wish to use. Assumes the content is 1 SMILE per line.')
     parser.add_argument('output',nargs='?',type=argparse.FileType('w'),default=sys.stdout,help='Name of the output file.')
