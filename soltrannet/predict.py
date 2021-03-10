@@ -2,6 +2,9 @@ import torch
 import numpy as np
 from .data_utils import load_data_from_smiles
 from .data_utils import construct_loader
+import pkg_resources
+from .transformer import make_model
+
 
 def predict(smiles, batch_size=32):
     """Predict Solubilities for a list of SMILES.
