@@ -10,13 +10,13 @@ _MODEL=make_model()
 if torch.cuda.is_available():
     _DEVICE=torch.device("cuda")
     _MODEL.load_state_dict(torch.load(pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")))
-    _MODEL.to(_DEVICE)
+    #_MODEL.to(_DEVICE)
     print('Using GPU')
 else:
     _DEVICE=torch.device('cpu')
     _MODEL.load_state_dict(torch.load(pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights"),map_location=_DEVICE))
     print('Using CPU')
-    
+
 def predict(smiles, batch_size=32):
     """Predict Solubilities for a list of SMILES.
     Args:
@@ -30,7 +30,9 @@ def predict(smiles, batch_size=32):
     assert X[0][0].shape[1]==28
     data_loader = construct_loader(X, batch_size=batch_size)
     
-    #set the model to evaluate mode
+    #set the model to evaluate mode and the correct device
+    if torch.cuda.is_available():
+        _MODEL.to(torch.device("cuda"))
     _MODEL.eval()
 
     #Now we can generate our predictions.
