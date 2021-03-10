@@ -1,7 +1,7 @@
-import torch
-import numpy as np
 from .data_utils import load_data_from_smiles
 from .data_utils import construct_loader
+import torch
+import numpy as np
 import pkg_resources
 from .transformer import make_model
 

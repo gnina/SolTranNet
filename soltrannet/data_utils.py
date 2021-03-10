@@ -4,16 +4,18 @@ Shang et al "Edge Attention-based Multi-Relational Graph Convolutional Networks"
 Coley et al "Convolutional Embedding of Attributed Molecular Graphs for Physical Property Prediction" -> https://github.com/connorcoley/conv_qsar_fast
 """
 
-import logging
-import numpy as np
-import torch
 import sys
-from torch.utils.data import Dataset
 try:
     from rdkit import Chem
     from rdkit.Chem import MolFromSmiles
 except:
     sys.exit('rdkit is not installed. Install with:\nconda install rdkit')
+
+import logging
+import numpy as np
+import torch
+import sys
+from torch.utils.data import Dataset
 
 use_cuda = torch.cuda.is_available()
 FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
