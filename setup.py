@@ -42,10 +42,7 @@ setup(
     python_requires='>=3.6, <4',
 
     install_requires=[
-        'torch>=1.7',
-        'torchvision>=0.8',
-        'torchaudio>=0.7',
-
+        'torch>=1.7.0',
     ],
 
     package_data={
