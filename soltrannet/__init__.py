@@ -8,6 +8,7 @@ import torch
 # TODO -- load weights & model properly here for testing
 weights=pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")
 
+'''
 tmp=make_model()
 use_cuda = torch.cuda.is_available()
 if use_cuda:
@@ -18,6 +19,7 @@ else:
     device=torch.device('cpu')
     tmp.load_state_dict(torch.load(weights,map_location=device))
 self.model=tmp
+'''
 
 def run(self):
     parser=argparse.ArgumentParser(description="Run SolTranNet aqueous solubility predictor")
