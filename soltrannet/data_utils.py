@@ -4,16 +4,18 @@ Shang et al "Edge Attention-based Multi-Relational Graph Convolutional Networks"
 Coley et al "Convolutional Embedding of Attributed Molecular Graphs for Physical Property Prediction" -> https://github.com/connorcoley/conv_qsar_fast
 """
 
-import logging
-import numpy as np
-import torch
 import sys
-from torch.utils.data import Dataset
 try:
     from rdkit import Chem
     from rdkit.Chem import MolFromSmiles
 except:
     sys.exit('rdkit is not installed. Install with:\nconda install rdkit')
+
+import logging
+import numpy as np
+import torch
+import sys
+from torch.utils.data import Dataset
 
 use_cuda = torch.cuda.is_available()
 FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
@@ -45,18 +47,17 @@ def load_data_from_smiles(x_smiles, add_dummy_node=True, one_hot_formal_charge=T
 
     return x_all
 
-def featurize_mol(mol, add_dummy_node, one_hot_formal_charge):
+def featurize_mol(mol, add_dummy_node):
     """Featurize molecule.
 
     Args:
         mol (rdchem.Mol): An RDKit Mol object.
         add_dummy_node (bool): If True, a dummy node will be added to the molecular graph.
-        one_hot_formal_charge (bool): If True, formal charges on atoms are one-hot encoded.
 
     Returns:
         A tuple of molecular graph descriptors (node features, adjacency matrix).
     """
-    node_features = np.array([get_atom_features(atom, one_hot_formal_charge)
+    node_features = np.array([get_atom_features(atom)
                               for atom in mol.GetAtoms()])
 
     adj_matrix = np.eye(mol.GetNumAtoms())
@@ -78,7 +79,13 @@ def featurize_mol(mol, add_dummy_node, one_hot_formal_charge):
     return node_features, adj_matrix
 
 
-def get_atom_features(atom, one_hot_formal_charge=True):
+#lookup table for one-hot elements
+anummap = {5:0, 6: 1, 7:2, 8: 3, 9: 4,  15:5, 16:6, 17:7, 35:8, 53:9 }
+anumtable = np.full(128,10)
+for i,val in anummap.items():
+    anumtable[i] = val
+    
+def get_atom_features(atom):
     """Calculate atom features.
 
             Identity            -- [B,C,N,O,F,P,S,Cl,Br,I,Dummy,Other]
@@ -90,40 +97,31 @@ def get_atom_features(atom, one_hot_formal_charge=True):
         Dummy and Other types, have the same one-hot encoding, but the dummy node is unconnected.
     Args:
         atom (rdchem.Atom): An RDKit Atom object.
-        one_hot_formal_charge (bool): If True, formal charges on atoms are one-hot encoded.
 
     Returns:
         A 1-dimensional array (ndarray) of atom features.
     """
-    attributes = []
+    attributes = np.zeros(27)    
+    anum = atom.GetAtomicNum()        
+    attributes[anumtable[anum]] = 1.0
+        
+    ncnt = min(len(atom.GetNeighbors()),5)
+    attributes[11+ncnt] = 1.0
 
-    attributes += one_hot_vector(
-        atom.GetAtomicNum(),
-        [5, 6, 7, 8, 9, 15, 16, 17, 35, 53, 999]
-    )
-
-    attributes += one_hot_vector(
-        len(atom.GetNeighbors()),
-        [0, 1, 2, 3, 4, 5]
-    )
-
-    attributes += one_hot_vector(
-        atom.GetTotalNumHs(),
-        [0, 1, 2, 3, 4]
-    )
-
-    if one_hot_formal_charge:
-        attributes += one_hot_vector(
-            atom.GetFormalCharge(),
-            [-1, 0, 1]
-        )
+    hcnt = min(atom.GetTotalNumHs(),4)
+    attributes[17+hcnt] = 1.0
+    
+    charge = atom.GetFormalCharge()
+    if charge == 0:
+        attributes[23] = 1.0
+    elif charge < 0:
+        attributes[22] = 1.0
     else:
-        attributes.append(atom.GetFormalCharge())
-
-    attributes.append(atom.IsInRing())
-    attributes.append(atom.GetIsAromatic())
-
-    return np.array(attributes, dtype=np.float32)
+        attributes[24] = 1.0
+        
+    attributes[25] = atom.IsInRing()
+    attributes[26] = atom.GetIsAromatic()
+    return attributes
 
 
 def one_hot_vector(val, lst):
@@ -240,12 +238,11 @@ def construct_loader(x, batch_size=32, shuffle=False):
 class MolIterableDataset(torch.utils.data.IterableDataset):
     '''An iterable dataset over Molecule objects.'''
     
-    def __init__(self, x_smiles, add_dummy_node=True, one_hot_formal_charge=True):
+    def __init__(self, x_smiles, add_dummy_node=True):
         '''Initialize iterable dataset with list of smiles'''
         super(MolIterableDataset).__init__()
         self.x_smiles = x_smiles
         self.add_dummy_node=add_dummy_node
-        self.one_hot_formal_charge = one_hot_formal_charge
                 
     def __iter__(self):
         
@@ -261,7 +258,7 @@ class MolIterableDataset(torch.utils.data.IterableDataset):
             try:
                 if i%nworkers == index:
                     mol = MolFromSmiles(smiles)
-                    afm, adj = featurize_mol(mol, self.add_dummy_node, self.one_hot_formal_charge)
+                    afm, adj = featurize_mol(mol, self.add_dummy_node)
                     yield Molecule([afm, adj],i,smiles)
             except ValueError as e:
                 logging.warning('the SMILES ({}) can not be converted to a graph.\nREASON: {}'.format(smiles,e))

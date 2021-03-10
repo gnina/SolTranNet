@@ -9,21 +9,25 @@ from .transformer import make_model
 import time
 
 #initialize model on import
-weights=pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")
-model=make_model()
-use_cuda = torch.cuda.is_available()
-if use_cuda:
-    device=torch.device("cuda")
-    model.load_state_dict(torch.load(weights))
-    model.to(device)
+_weights=pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")
+_model=make_model()
+
+if torch.cuda.is_available():
+    _device=torch.device("cuda")
+    _model.load_state_dict(torch.load(_weights))    
+    _model.to(_device)
 else:
-    device=torch.device('cpu')
-    model.load_state_dict(torch.load(weights,map_location=device))
+    _device=torch.device('cpu')
+    _model.load_state_dict(torch.load(_weights,map_location=_device))
+
     
-def predict(smiles, batch_size=32, num_workers=1):
+def predict(smiles, batch_size=32, num_workers=1,device=_device):
     """Predict Solubilities for a list of SMILES.
     Args:
         smiles ([str]): A list of SMILES strings, upon which we wish to predict the solubilities for.
+        batch_size: sizes of batches to use
+        num_workers: number of parallel workers to use 
+        device: torch device to use
     Returns:
         A list of tuples (prediction, SMILES, Warning).
     """
@@ -31,7 +35,8 @@ def predict(smiles, batch_size=32, num_workers=1):
     data_loader = construct_loader_from_smiles(smiles, batch_size=batch_size, num_workers=num_workers)
     
     #Then we ensure the model is set up properly
-    model.eval()
+    _model.to(device)
+    _model.eval()
 
     #Now we can generate our predictions.
     #Molecules are processed out of order due to parallelism, so use heap
@@ -43,8 +48,9 @@ def predict(smiles, batch_size=32, num_workers=1):
             adjacency_matrix, node_features, smiles, indices = batch
             adjacency_matrix = adjacency_matrix.to(device)
             node_features = node_features.to(device)
+            
             batch_mask = torch.sum(torch.abs(node_features),dim=-1) != 0
-            pred = model(node_features, batch_mask, adjacency_matrix, None)
+            pred = _model(node_features, batch_mask, adjacency_matrix, None)
             for pred,node_feature,smi,i in zip(pred.flatten().tolist(), node_features, smiles, indices):
                 heapq.heappush(H,(i,(pred, smi, check_smile(smi, node_feature))))
                 while H and H[0][0] == index:
