@@ -3,7 +3,7 @@ import numpy as np
 from .data_utils import load_data_from_smiles
 from .data_utils import construct_loader
 
-def predict(self, smiles, batch_size=32):
+def predict(smiles, batch_size=32):
     """Predict Solubilities for a list of SMILES.
     Args:
         smiles ([str]): A list of SMILES strings, upon which we wish to predict the solubilities for.
