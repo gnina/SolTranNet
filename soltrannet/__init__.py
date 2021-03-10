@@ -1,25 +1,5 @@
 from .predict import predict
 import argparse
-import sys
-import pkg_resources
-from .transformer import make_model
-import torch
-
-# TODO -- load weights & model properly here for testing
-weights=pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")
-
-'''
-tmp=make_model()
-use_cuda = torch.cuda.is_available()
-if use_cuda:
-    device=torch.device("cuda")
-    tmp.load_state_dict(torch.load(weights))
-    tmp.to(device)
-else:
-    device=torch.device('cpu')
-    tmp.load_state_dict(torch.load(weights,map_location=device))
-self.model=tmp
-'''
 
 def run():
     parser=argparse.ArgumentParser(description="Run SolTranNet aqueous solubility predictor")
@@ -33,12 +13,3 @@ def run():
     predictions=predict(smiles,batch_size=args.batchsize)
     for pred, smi, warn in predictions:
         args.output.write(f'{smi} {pred} {warn}\n')
-    '''
-    if args.output:
-        with open(args.output,'w') as outfile:
-            for pred, smi, warn in predictions:
-                outfile.write(f'{smi} {pred} {warn}\n')
-    else:
-        for pred, smi, warn in predictions:
-            print(pred,smi,warn)
-    '''

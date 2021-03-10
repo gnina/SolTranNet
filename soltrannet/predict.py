@@ -5,6 +5,15 @@ import numpy as np
 import pkg_resources
 from .transformer import make_model
 
+#Defining the global model
+_MODEL=make_model()
+if torch.cuda.is_available():
+    _DEVICE=torch.device("cuda")
+    _MODEL.load_state_dict(torch.load(pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")))
+    _MODEL.to(_DEVICE)
+else:
+    _DEVICE=torch.device('cpu')
+    _MODEL.load_state_dict(torch.load(pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights"),map_location=_DEVICE))
 
 def predict(smiles, batch_size=32):
     """Predict Solubilities for a list of SMILES.
@@ -19,18 +28,8 @@ def predict(smiles, batch_size=32):
     assert X[0][0].shape[1]==28
     data_loader = construct_loader(X, batch_size=batch_size)
     
-    #Then we ensure the model is set up properly
-    weights=pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")
-    model=make_model()#self.model
-    use_cuda = torch.cuda.is_available()
-    if use_cuda:
-        device=torch.device("cuda")
-        model.load_state_dict(torch.load(weights))
-        model.to(device)
-    else:
-        device=torch.device('cpu')
-        model.load_state_dict(torch.load(weights,map_location=device))
-    model.eval()
+    #set the model to evaluate mode
+    _MODEL.eval()
 
     #Now we can generate our predictions.
     predictions=np.array([])
@@ -38,7 +37,7 @@ def predict(smiles, batch_size=32):
         for batch in data_loader:
             adjacency_matrix, node_features = batch
             batch_mask = torch.sum(torch.abs(node_features),dim=-1) != 0
-            pred = model(node_features, batch_mask, adjacency_matrix, None)
+            pred = _MODEL(node_features, batch_mask, adjacency_matrix, None)
             predictions=np.append(predictions,pred.tolist())
 
 
