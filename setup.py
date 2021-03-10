@@ -42,7 +42,8 @@ setup(
     python_requires='>=3.6, <4',
 
     install_requires=[
-        'torch>=1.7.0',
+        'torch >= 1.7.0',
+        'pathlib >= 1.0',
     ],
 
     package_data={
