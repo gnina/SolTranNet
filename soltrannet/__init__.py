@@ -19,7 +19,7 @@ else:
     tmp.load_state_dict(torch.load(weights,map_location=device))
 self.model=tmp
 
-def run():
+def run(self):
     parser=argparse.ArgumentParser(description="Run SolTranNet aqueous solubility predictor")
     parser.add_argument('-i','--input',required=True,nargs='?',type=argparse.FileType('r'),default=sys.stdin,help='PATH to the file containing the SMILES you wish to use. Assumes the content is 1 SMILE per line.')
     parser.add_argument('-o','--output',nargs='?',type=argparse.FileType('w'),default=sys.stdout,help='Name of the output file.')
@@ -28,7 +28,7 @@ def run():
 
     smiles=[x.rstrip() for x in args.input.readlines()]
     args.input.close()
-    predictions=predict(smiles,batch_size=args.batchsize)
+    predictions=predict(self,smiles,batch_size=args.batchsize)
     for pred, smi, warn in predictions:
         args.output.write(f'{smi} {pred} {warn}\n')
     '''
