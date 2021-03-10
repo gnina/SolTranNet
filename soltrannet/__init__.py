@@ -3,6 +3,7 @@ import argparse
 import sys
 import pkg_resources
 from .transformer import make_model
+import torch
 
 # TODO -- load weights & model properly here for testing
 weights=pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")
