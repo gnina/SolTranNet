@@ -30,7 +30,7 @@ def run(self):
 
     smiles=[x.rstrip() for x in args.input.readlines()]
     args.input.close()
-    predictions=predict(self,smiles,batch_size=args.batchsize)
+    predictions=predict(smiles,batch_size=args.batchsize)
     for pred, smi, warn in predictions:
         args.output.write(f'{smi} {pred} {warn}\n')
     '''
