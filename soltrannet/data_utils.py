@@ -139,11 +139,11 @@ class Molecule:
         - self.label: 0 neg, 1 pos -1 missing for different target.
     """
 
-    def __init__(self, x, index):
+    def __init__(self, x, index, smile=''):
         self.node_features = x[0]
         self.adjacency_matrix = x[1]
-        #self.y = y
         self.index = index
+        self.smile = smile
 
 
 class MolDataset(Dataset):
@@ -192,7 +192,7 @@ def mol_collate_func(batch):
     Returns:
         A list of FloatTensors with padded molecule features: (adjacency matrices, node features).
     """
-    adjacency_list, features_list = [], []
+    adjacency_list, features_list, smiles_list, index_list = [], [], [], []
 
     max_size = 0
     for molecule in batch:
@@ -202,8 +202,11 @@ def mol_collate_func(batch):
     for molecule in batch:
         adjacency_list.append(pad_array(molecule.adjacency_matrix, (max_size, max_size)))
         features_list.append(pad_array(molecule.node_features, (max_size, molecule.node_features.shape[1])))
+        smiles_list.append(molecule.smile)
+        index_list.append(molecule.index)
 
-    return [FloatTensor(features) for features in (adjacency_list, features_list)]
+    #do not use cuda memory during data loading
+    return [torch.FloatTensor(adjacency_list), torch.FloatTensor(features_list), smiles_list, index_list]
 
 def construct_dataset(x_all):
     """Construct a MolDataset object from the provided data.
@@ -231,4 +234,50 @@ def construct_loader(x, batch_size=32, shuffle=False):
     """
     data_set = construct_dataset(x)
     loader = torch.utils.data.DataLoader(dataset=data_set,batch_size=batch_size,collate_fn=mol_collate_func,shuffle=shuffle)
+    return loader
+
+
+class MolIterableDataset(torch.utils.data.IterableDataset):
+    '''An iterable dataset over Molecule objects.'''
+    
+    def __init__(self, x_smiles, add_dummy_node=True, one_hot_formal_charge=True):
+        '''Initialize iterable dataset with list of smiles'''
+        super(MolIterableDataset).__init__()
+        self.x_smiles = x_smiles
+        self.add_dummy_node=add_dummy_node
+        self.one_hot_formal_charge = one_hot_formal_charge
+                
+    def __iter__(self):
+        
+        worker_info = torch.utils.data.get_worker_info()
+        if worker_info:
+            index = worker_info.id
+            nworkers = worker_info.num_workers
+        else:
+            index = 0
+            nworkers = 1
+                    
+        for i,smiles in enumerate(self.x_smiles):
+            try:
+                if i%nworkers == index:
+                    mol = MolFromSmiles(smiles)
+                    afm, adj = featurize_mol(mol, self.add_dummy_node, self.one_hot_formal_charge)
+                    yield Molecule([afm, adj],i,smiles)
+            except ValueError as e:
+                logging.warning('the SMILES ({}) can not be converted to a graph.\nREASON: {}'.format(smiles,e))
+
+
+def construct_loader_from_smiles(smiles, batch_size=32, num_workers=1, shuffle=False):
+    """Construct a data loader for the provided data.
+
+    Args:
+        smiles (list): A list of smiles.
+        batch_size (int): The batch size. Defaults to 32
+        shuffle (bool): If True the data will be loaded in a random order. Defaults to False.
+
+    Returns:
+        A DataLoader object that yields batches of padded molecule features.
+    """
+    data_set = MolIterableDataset(smiles)
+    loader = torch.utils.data.DataLoader(dataset=data_set,batch_size=batch_size,collate_fn=mol_collate_func,shuffle=shuffle,num_workers=num_workers)
     return loader

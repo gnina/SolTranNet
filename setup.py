@@ -43,9 +43,6 @@ setup(
 
     install_requires=[
         'torch>=1.7',
-        'torchvision>=0.8',
-        'torchaudio>=0.7',
-
     ],
 
     package_data={
