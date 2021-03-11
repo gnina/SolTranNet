@@ -52,7 +52,7 @@ setup(
 
     entry_points={
         'console_scripts':[
-            'soltrannet=soltrannet:_run',
+            'soltrannet=soltrannet:main',
         ],
     },
 
