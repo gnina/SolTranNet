@@ -16,5 +16,5 @@ def _run():
     args.input.close()
     predictions=predict(smiles,batch_size=args.batchsize,num_workers=args.cpus)
     for pred, smi, warn in predictions:
-        args.output.write(f'{smi} {pred:.3f} {warn}\n')
+        args.output.write(f'{smi},{pred:.3f},{warn}\n')
 

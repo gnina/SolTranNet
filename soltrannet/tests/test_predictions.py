@@ -17,7 +17,7 @@ class TestPredictions(TestCase):
             return first and second and third
 
         smiles=["c1ccccc1","[Zn+2]","[Na+].[Cl-]"]
-        correct=[(-1.052748441696167, 'c1ccccc1', ''),(-6.881845474243164,'[Zn+2]','Other-typed Atom(s), Detected Prediction less reliable'),(-0.16869020462036133,'[Na+].[Cl-]','Salt, Other-typed Atom(s), Detected Prediction less reliable')]
+        correct=[(-1.052748441696167, 'c1ccccc1', ''),(-6.881845474243164,'[Zn+2]','Other-typed Atom(s) Detected Prediction less reliable'),(-0.16869020462036133,'[Na+].[Cl-]','Salt Other-typed Atom(s) Detected Prediction less reliable')]
         
         test_cpu=list(stn.predict(smiles,device='cpu'))
         self.assertTrue(helper(correct, test_cpu))

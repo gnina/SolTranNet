@@ -73,11 +73,11 @@ def check_smile(smi, node_features):
 
     #start with a check for salts
     if '.' in smi.split()[0]:
-        warn+='Salt, '
+        warn+='Salt '
 
     #use the calculated molecular features to determine if an "Other" typed atom exists in the molecule.
     if node_features[:,11].sum():
-        warn+='Other-typed Atom(s), '
+        warn+='Other-typed Atom(s) '
 
     if warn!='':
         warn+='Detected Prediction less reliable'
