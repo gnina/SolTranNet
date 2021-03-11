@@ -49,7 +49,7 @@ Upon successful pip installation, a command line tool will be installed.
 
 To generate the predictions for SMILES provided in `my_smiles.txt` and store them into `my_output.txt`:
 ```
-soltrannet -i my_smiles.txt -o my_output.txt
+soltrannet my_smiles.txt my_output.txt
 ```
 
 ### In a Python environment
@@ -58,7 +58,7 @@ Soltrannet also supports integration in a python3 environment
 ```python
 import soltrannet as stn
 my_smiles=["c1ccccc1","Cn1cnc2n(C)c(=O)n(C)c(=O)c12","[Zn+2]","[Na+].[Cl-]"]
-predictions=stn.predict(my_smiles)
+predictions=list(stn.predict(my_smiles))
 ```
 
 ## Help

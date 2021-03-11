@@ -24,7 +24,7 @@ IntTensor = torch.cuda.IntTensor if use_cuda else torch.IntTensor
 DoubleTensor = torch.cuda.DoubleTensor if use_cuda else torch.DoubleTensor
 
 
-def load_data_from_smiles(x_smiles, add_dummy_node=True, one_hot_formal_charge=True):
+def load_data_from_smiles(x_smiles, add_dummy_node=True):
     """Load and featurize data from lists of SMILES strings and labels.
 
     Args:
@@ -40,7 +40,7 @@ def load_data_from_smiles(x_smiles, add_dummy_node=True, one_hot_formal_charge=T
     for smiles in x_smiles:
         try:
             mol = MolFromSmiles(smiles)
-            afm, adj = featurize_mol(mol, add_dummy_node, one_hot_formal_charge)
+            afm, adj = featurize_mol(mol, add_dummy_node)
             x_all.append([afm, adj])
         except ValueError as e:
             logging.warning('the SMILES ({}) can not be converted to a graph.\nREASON: {}'.format(smiles,e))
