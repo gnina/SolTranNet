@@ -12,3 +12,4 @@ class TestWarning(TestCase):
             warnings.append(check_smile(smi,f))
 
         self.assertTrue(warnings==['','','','Other-typed Atom(s), Detected Prediction less reliable','Salt, Other-typed Atom(s), Detected Prediction less reliable'])
+        
