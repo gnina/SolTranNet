@@ -2,11 +2,8 @@ import torch
 import numpy as np
 import pkg_resources, heapq
 
-from .data_utils import load_data_from_smiles
 from .data_utils import construct_loader_from_smiles
 from .transformer import make_model
-
-import time
 
 #initialize model on import
 _weights=pkg_resources.resource_filename(__name__,"soltrannet_aqsol_trained.weights")

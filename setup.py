@@ -56,6 +56,9 @@ setup(
         ],
     },
 
+    test_suite='nose.collector',
+    tests_require=['nose'],
+    
     project_urls={
         'Bug Reports': 'https://github.com/gnina/SolTranNet/issues',
         'Source': 'https://github.com/gnina/SolTranNet',
