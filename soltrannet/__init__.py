@@ -8,7 +8,7 @@ def _run():
     parser.add_argument('input',nargs='?',type=argparse.FileType('r'),default=sys.stdin,help='PATH to the file containing the SMILES you wish to use. Assumes the content is 1 SMILE per line.')
     parser.add_argument('output',nargs='?',type=argparse.FileType('w'),default=sys.stdout,help='Name of the output file.')
     parser.add_argument('--batchsize',default=32,type=int,help='Batch size for the data loader. Defaults to 32.')
-    parser.add_argument('--cpus',default=multiprocessing.cpu_count(),type=int,help='Number of CPU cores to use. Defaults to use all available cores.')
+    parser.add_argument('--cpus',default=multiprocessing.cpu_count(),type=int,help='Number of CPU cores to use. Defaults to use all available cores. Pass 0 to only run on 1 CPU.')
 
     args=parser.parse_args()
 
