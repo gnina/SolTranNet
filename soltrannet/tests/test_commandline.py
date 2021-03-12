@@ -1,5 +1,4 @@
 import argparse
-from unittest import mock
 from unittest import TestCase
 from soltrannet import _run
 import io
@@ -9,7 +8,7 @@ class TestCommandLine(TestCase):
         with io.StringIO() as buf:
             correct='c1ccccc1,-1.053,\nc1ccccc1 .ignore,-1.053,\nCn1cnc2n(C)c(=O)n(C)c(=O)c12,-1.132,\n[Zn+2],-6.882,Other-typed Atom(s) Detected Prediction less reliable\n[Na+].[Cl-],-0.169,Salt Other-typed Atom(s) Detected Prediction less reliable\n'
 
-            @mock.patch('argparse.ArgumentParser.parse_args',return_value=argparse.Namespace(input=['c1ccccc1','c1ccccc1 .ignore','Cn1cnc2n(C)c(=O)n(C)c(=O)c12','[Zn+2]','[Na+].[Cl-]'],
-                                                                                             output=buf,batchsize=5, cpus=0))
-            _run()
+            args=argparse.Namespace(input=['c1ccccc1','c1ccccc1 .ignore','Cn1cnc2n(C)c(=O)n(C)c(=O)c12','[Zn+2]','[Na+].[Cl-]'],
+                                                                                             output=buf,batchsize=5, cpus=0)
+            _run(args)
             self.assertEqual(buf.getvalue(),correct)
