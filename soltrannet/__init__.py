@@ -17,7 +17,6 @@ def _parse_args():
 def _run(args):
 
     smiles=[x.rstrip() for x in args.input]
-    args.input.close()
     predictions=predict(smiles,batch_size=args.batchsize,num_workers=args.cpus)
     for pred, smi, warn in predictions:
         args.output.write(f'{smi},{pred:.3f},{warn}\n')
