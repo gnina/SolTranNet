@@ -9,7 +9,7 @@ setup(
 
     name='soltrannet',
 
-    version='1.0.6',
+    version='1.0.7',
 
     description='A molecule attention transformer for predicting aqueous solubility',
 
