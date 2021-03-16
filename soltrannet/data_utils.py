@@ -257,7 +257,7 @@ class MolIterableDataset(torch.utils.data.IterableDataset):
         for i,smiles in enumerate(self.x_smiles):
             try:
                 if i%nworkers == index:
-                    mol = MolFromSmiles(smiles)
+                    mol = MolFromSmiles(smiles.split()[0])
                     afm, adj = featurize_mol(mol, self.add_dummy_node)
                     yield Molecule([afm, adj],i,smiles)
             except ValueError as e:
