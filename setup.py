@@ -9,7 +9,7 @@ setup(
 
     name='soltrannet',
 
-    version='1.0.4',
+    version='1.0.5',
 
     description='A molecule attention transformer for predicting aqueous solubility',
 
@@ -44,6 +44,7 @@ setup(
     install_requires=[
         'torch >= 1.7.0',
         'pathlib >= 1.0',
+        'nose >= 1.3.0',
     ],
 
     package_data={
