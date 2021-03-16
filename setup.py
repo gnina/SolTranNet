@@ -9,7 +9,7 @@ setup(
 
     name='soltrannet',
 
-    version='1.0.5',
+    version='1.0.6',
 
     description='A molecule attention transformer for predicting aqueous solubility',
 
@@ -44,7 +44,6 @@ setup(
     install_requires=[
         'torch >= 1.7.0',
         'pathlib >= 1.0',
-        'nose >= 1.3.0',
     ],
 
     package_data={
@@ -52,13 +51,11 @@ setup(
     },
 
     entry_points={
-        'console_scripts':[
-            'soltrannet=soltrannet.command_line:main',
-        ],
+        'console_scripts':['soltrannet=soltrannet.command_line:main'],
     },
 
     test_suite='nose.collector',
-    tests_require=['nose'],
+    tests_require=['nose','nose-cover3'],
 
     project_urls={
         'Bug Reports': 'https://github.com/gnina/SolTranNet/issues',
