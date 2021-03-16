@@ -3,4 +3,4 @@ import torch
 
 class TestTorchCuda(TestCase):
     def test_torch_gpu(self):
-        self.assertTrue(torch.cuda.is_availabe())
+        self.assertTrue(torch.cuda.is_available())
