@@ -27,13 +27,13 @@ First, install [RDKit](https://github.com/rdkit/rdkit). Installation instruction
 
 After RDKit has finished installing, you can install SolTranNet via pip:
 ```
-pip install soltrannet
+python3 -m pip install soltrannet
 ```
 NOTE: This installation method often mismatches installation of PyTorch for enabling CUDA if it needs to install PyTorch as a dependency.
 
 If you wish to do a more careful installation:
 ```
-pip install --install-option test soltrannet
+python3 -m pip install --install-option test soltrannet
 ```
 This will run our unit tests to ensure that GPU-enabled torch was setup correctly, and the proper functioning of SolTranNet as a command line tool and within a python environment.
 
