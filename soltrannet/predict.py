@@ -21,15 +21,14 @@ else:
 def predict(smi, batch_size=32, num_workers=1,device=_device):
     """Predict Solubilities for a list of SMILES.
     Args:
-        smiles ([str]): A list of SMILES strings, upon which we wish to predict the solubilities for.
+        smi ([str]): A list of SMILES strings, upon which we wish to predict the solubilities for.
         batch_size: sizes of batches to use
         num_workers: number of parallel workers to use 
         device: torch device to use
     Returns:
-        A list of tuples (prediction, SMILES, Warning).
+        A list of tuples [(prediction, SMILES, Warning)].
     """
     #generate the molecular graphs from the SMILES strings
-    #smiles_use=[x.rstrip().split()[0] for x in smi]
     data_loader = construct_loader_from_smiles(smi, batch_size=batch_size, num_workers=num_workers)
     
     #Then we ensure the model is set up properly

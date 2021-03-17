@@ -9,7 +9,7 @@ try:
     from rdkit import Chem
     from rdkit.Chem import MolFromSmiles
 except:
-    sys.exit('rdkit is not installed. Install with:\nconda install rdkit')
+    sys.exit('rdkit is not installed. Install with:\nconda install -c rdkit rdkit')
 
 import logging
 import numpy as np

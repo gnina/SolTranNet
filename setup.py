@@ -9,9 +9,9 @@ setup(
 
     name='soltrannet',
 
-    version='1.0.7',
+    version='1.0.0',
 
-    description='A molecule attention transformer for predicting aqueous solubility',
+    description='Molecule attention transformer for predicting aqueous solubility (log S)',
 
     long_description=long_description,
 
