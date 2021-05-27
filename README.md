@@ -1,7 +1,5 @@
 # SolTranNet
-The official implementation of SolTranNet.
-
-[comment]: # (TODO: Add an html reference to above when the paper is published.)
+The official implementation of SolTranNet, whose publication is available [here](https://pubs.acs.org/doi/10.1021/acs.jcim.1c00331).
 
 SolTranNet is an optimized fork of the [Molecule Attention Transformer](https://github.com/ardigen/MAT), whose original paper can be found [here](https://arxiv.org/abs/2002.08264).
 
@@ -85,4 +83,25 @@ predictions=list(stn.predict(my_smiles))
 ## Help
 Please [subscribe to our slack team](https://join.slack.com/t/gninacnn/shared_invite/enQtNTY3ODk2ODk5OTU5LTkzMjY1ZTE3YjJlZmIxOWI2OTU3Y2RlMTIyYmM2YmFmYTU1NTk5ZTBmMjUwMGRhYzk1ZjY5N2E4Y2I5YWU5YWI).
 
-[comment]: # (TODO: Add a BibTex reference to the paper when published.)
+If you use SolTranNet in your work, please cite our original publication --
+```
+@article{doi:10.1021/acs.jcim.1c00331,
+ author = {Francoeur, Paul G. and Koes, David R.},
+ title = {SolTranNet–A Machine Learning Tool for Fast Aqueous Solubility Prediction},
+ journal = {Journal of Chemical Information and Modeling},
+ volume = {0},
+ number = {0},
+ pages = {null},
+ year = {0},
+ doi = {10.1021/acs.jcim.1c00331},
+ note ={PMID: 34038123},
+
+ URL = { 
+        https://doi.org/10.1021/acs.jcim.1c00331
+    },
+ eprint = { 
+        https://doi.org/10.1021/acs.jcim.1c00331
+    }
+
+}
+```
