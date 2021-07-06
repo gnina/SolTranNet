@@ -1,6 +1,8 @@
 # SolTranNet
 The official implementation of SolTranNet, whose publication is available [here](https://pubs.acs.org/doi/10.1021/acs.jcim.1c00331).
 
+The code for creating the figures for the publication is available [here](https://github.com/francoep/SolTranNet_paper).
+
 SolTranNet is an optimized fork of the [Molecule Attention Transformer](https://github.com/ardigen/MAT), whose original paper can be found [here](https://arxiv.org/abs/2002.08264).
 
 ## Requirements
